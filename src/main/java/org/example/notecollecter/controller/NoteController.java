@@ -1,30 +1,33 @@
 package org.example.notecollecter.controller;
 
+import jakarta.json.bind.JsonbBuilder;
 import org.example.notecollecter.dto.impl.NoteDTO;
+import org.example.notecollecter.service.NoteService;
 import org.example.notecollecter.util.AppUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/notes")
 public class NoteController {
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String saveNote(@RequestBody NoteDTO noteDTO) {
-        noteDTO.setNoteId(AppUtil.generateNoteId());
-        return "note saved successfully";
+    @Autowired
+    private NoteService noteService;
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public NoteDTO saveNote(@RequestBody NoteDTO noteDTO) {
+        return noteService.saveNote(noteDTO);
     }
 
     public String getSelectedNote() {
         return null;
     }
 
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<NoteDTO> getAllNotes() {
-        return null;
+        return noteService.getAllNotes();
     }
 
     public void deleteNote() {
