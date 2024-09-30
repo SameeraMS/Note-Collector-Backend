@@ -1,6 +1,7 @@
 package org.example.notecollecter.config;
 
 import jakarta.persistence.EntityManagerFactory;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +18,7 @@ import javax.sql.DataSource;
 //presentation/controller layer eken pita configs
 
 @Configuration
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackages = "org.example.notecollecter.dao")
 @EnableTransactionManagement
 @ComponentScan(basePackages = "org.example.notecollecter")
 public class WebAppRootConfig {
@@ -51,5 +52,10 @@ public class WebAppRootConfig {
         JpaTransactionManager txManager = new JpaTransactionManager();
         txManager.setEntityManagerFactory(entityManagerFactory);
         return txManager;
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 }

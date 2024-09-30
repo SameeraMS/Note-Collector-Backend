@@ -1,10 +1,9 @@
 package org.example.notecollecter.controller;
 
-import jakarta.json.bind.JsonbBuilder;
 import org.example.notecollecter.dto.impl.NoteDTO;
 import org.example.notecollecter.service.NoteService;
-import org.example.notecollecter.util.AppUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +20,9 @@ public class NoteController {
         return noteService.saveNote(noteDTO);
     }
 
-    public String getSelectedNote() {
-        return null;
+    @GetMapping(value = "/{noteId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public NoteDTO getSelectedNote(@PathVariable("noteId") String noteId) {
+        return noteService.getSelectedNote(noteId);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -30,12 +30,15 @@ public class NoteController {
         return noteService.getAllNotes();
     }
 
-    public void deleteNote() {
-
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{noteId}")
+    public void deleteNote(@PathVariable("noteId") String noteId) {
+        noteService.deleteNote(noteId);
     }
 
-    public void updateNote(String noteId, NoteDTO noteDTO) {
-
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void updateNote(@RequestBody NoteDTO noteDTO) {
+        noteService.updateNote(noteDTO.getNoteId(), noteDTO);
     }
 
 }

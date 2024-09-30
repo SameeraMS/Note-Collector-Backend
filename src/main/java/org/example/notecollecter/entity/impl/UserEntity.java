@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.notecollecter.dto.impl.NoteDTO;
 import org.example.notecollecter.entity.SuperEntity;
 
 import java.util.List;
@@ -22,6 +21,7 @@ public class UserEntity implements SuperEntity {
     @Column(unique = true)
     private String email;
     private String password;
+    @Column(columnDefinition = "LONGTEXT")
     private String profilePic;
     @OneToMany(mappedBy = "user")
     private List<NoteEntity> notes;
