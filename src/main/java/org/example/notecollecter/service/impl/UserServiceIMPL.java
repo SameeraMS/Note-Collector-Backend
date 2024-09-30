@@ -6,6 +6,7 @@ import org.example.notecollecter.dto.UserStatus;
 import org.example.notecollecter.dto.impl.UserDTO;
 import org.example.notecollecter.entity.impl.UserEntity;
 import org.example.notecollecter.exception.DataPersistException;
+import org.example.notecollecter.exception.UserNotFoundException;
 import org.example.notecollecter.service.UserService;
 import org.example.notecollecter.util.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,11 @@ public class UserServiceIMPL implements UserService {
 
     @Override
     public void deleteUser(String userId) {
-        userDao.deleteById(userId);
+        if (!userDao.existsById(userId)) {
+            throw new UserNotFoundException("User " + userId + " not found");
+        } else {
+            userDao.deleteById(userId);
+        }
     }
 
     @Override

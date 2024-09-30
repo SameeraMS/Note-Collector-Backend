@@ -4,6 +4,7 @@ import org.example.notecollecter.customStatusCodes.SelectedUserErrorStatus;
 import org.example.notecollecter.dto.UserStatus;
 import org.example.notecollecter.dto.impl.UserDTO;
 import org.example.notecollecter.exception.DataPersistException;
+import org.example.notecollecter.exception.UserNotFoundException;
 import org.example.notecollecter.service.UserService;
 import org.example.notecollecter.util.AppUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +53,10 @@ public class UserController {
             userService.saveUser(userDTO);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (DataPersistException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (IOException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -61,17 +64,30 @@ public class UserController {
 
     @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserStatus getSelectedUser(@PathVariable("userId") String userId) {
-        String regex = "^USER-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$\n";
+        String regex = "^USER-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$";
         if (!userId.matches(regex)) {
             return new SelectedUserErrorStatus(1, "Invalid User Id");
         }
         return userService.getSelectedUser(userId);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable("userId") String userId) {
-        userService.deleteUser(userId);
+    public ResponseEntity<Void> deleteUser(@PathVariable("userId") String userId) {
+        String regex = "^USER-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$";
+        if (!userId.matches(regex)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            userService.deleteUser(userId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
