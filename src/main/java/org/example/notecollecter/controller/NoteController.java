@@ -70,11 +70,20 @@ public class NoteController {
         }
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping(value = "/{noteId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void updateNote(@PathVariable("noteId") String noteId, @RequestBody NoteDTO noteDTO) {
-        noteDTO.setNoteId(noteId);
-        noteService.updateNote(noteId, noteDTO);
+    public ResponseEntity<Void> updateNote(@PathVariable("noteId") String noteId, @RequestBody NoteDTO noteDTO) {
+        try {
+            noteDTO.setNoteId(noteId);
+            noteService.updateNote(noteId, noteDTO);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (NoteNotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
 }

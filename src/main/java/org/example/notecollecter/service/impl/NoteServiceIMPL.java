@@ -34,7 +34,8 @@ public class NoteServiceIMPL implements NoteService {
 
     @Override
     public NoteStatus getSelectedNote(String noteId) {
-        if (noteDao.existsById(noteId)) {
+        Optional<NoteEntity> search = noteDao.findById(noteId);
+        if (search.isPresent()) {
             NoteEntity note = noteDao.getReferenceById(noteId);
             return mapping.toNoteDTO(note);
         } else {
@@ -64,6 +65,8 @@ public class NoteServiceIMPL implements NoteService {
             search.get().setNoteDesc(noteDTO.getNoteDesc());
             search.get().setCreatedDate(noteDTO.getCreatedDate());
             search.get().setPriorityLevel(noteDTO.getPriorityLevel());
+        } else {
+            throw new NoteNotFoundException("Note " + noteId + " not found");
         }
     }
 }

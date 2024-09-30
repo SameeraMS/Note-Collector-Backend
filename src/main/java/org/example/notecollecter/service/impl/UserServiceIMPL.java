@@ -65,6 +65,8 @@ public class UserServiceIMPL implements UserService {
             search.get().setLastName(userDTO.getLastName());
             search.get().setPassword(userDTO.getPassword());
             search.get().setProfilePic(userDTO.getProfilePic());
+        } else {
+            throw new UserNotFoundException("User " + userId + " not found");
         }
     }
 }

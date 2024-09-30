@@ -93,9 +93,8 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void updateUser(
+    public ResponseEntity<Void> updateUser(
             @PathVariable("userId") String userId,
             @RequestPart("firstName") String firstName,
             @RequestPart("lastName") String lastName,
@@ -119,6 +118,15 @@ public class UserController {
         userDTO.setPassword(password);
         userDTO.setProfilePic(base64ProfilePic);
 
-        userService.updateUser(userDTO.getUserId(), userDTO);
+        try {
+            userService.updateUser(userId, userDTO);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
