@@ -7,6 +7,7 @@ import org.example.notecollecter.exception.DataPersistException;
 import org.example.notecollecter.exception.UserNotFoundException;
 import org.example.notecollecter.service.UserService;
 import org.example.notecollecter.util.AppUtil;
+import org.example.notecollecter.util.Regex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,8 +24,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> saveUser(
             @RequestPart("firstName") String firstName,
             @RequestPart("lastName") String lastName,
@@ -55,7 +55,7 @@ public class UserController {
         } catch (DataPersistException e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -64,8 +64,7 @@ public class UserController {
 
     @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserStatus getSelectedUser(@PathVariable("userId") String userId) {
-        String regex = "^USER-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$";
-        if (!userId.matches(regex)) {
+        if (!userId.matches(Regex.USER_ID_REGEX)) {
             return new SelectedUserErrorStatus(1, "Invalid User Id");
         }
         return userService.getSelectedUser(userId);
@@ -73,8 +72,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable("userId") String userId) {
-        String regex = "^USER-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$";
-        if (!userId.matches(regex)) {
+        if (!userId.matches(Regex.USER_ID_REGEX)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 

@@ -18,7 +18,7 @@ public class NoteEntity implements SuperEntity {
     private String noteDesc;
     private String createdDate;
     private String priorityLevel;
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "userId",nullable = false)
     private UserEntity user;
 }
